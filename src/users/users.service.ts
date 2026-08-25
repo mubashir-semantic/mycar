@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UsersService {
   constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-  createUser(email: string, password: string) {
+  create(email: string, password: string) {
     const user = this.repo.create({ email, password });
     return this.repo.save(user);
   }
@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   find(email: string) {
-    return this.repo.findOne({ where: { email } });
+    return this.repo.find({ where: { email } });
   }
 
   async update(id: number, updates: Partial<User>) {
