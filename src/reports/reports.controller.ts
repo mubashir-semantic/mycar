@@ -39,7 +39,6 @@ export class ReportsController {
 
   @Get()
   getEstimate(@Query() query: GetEstimateDto) {
-    console.log(query); // Abhi sirf console mein print kara ke check karenge
-    return { message: 'Query received!' };
+    return this.reportsService.createEstimate(query);
   }
 }

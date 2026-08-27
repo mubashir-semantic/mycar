@@ -74,4 +74,4 @@ Content-Type: application/json
 
 
 ### Get an estimate for an existing vehicle
-GET http://localhost:3000/reports?make=Toyota&model=Corolla&lng=45.45&lat=45.45&mileage=100000&year=1951
+GET http://localhost:3000/reports?make=Toyota&model=Corolla&lng=45.45&lat=45.45&mileage=100000&year=1980
