@@ -1,23 +1,20 @@
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core'; // <-- 1. Naya import
+import { Module, MiddlewareConsumer } from '@nestjs/common'; // MiddlewareConsumer add kiya
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { AuthService } from './auth.service';
 import { User } from './user.entity';
-import { CurrentUserInterceptor } from './current-user.interceptor'; // <-- 2. Interceptor import kiya
+import { CurrentUserMiddleware } from './middlewares/current-user.middleware'; // Naya Import
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    AuthService,
-    // 3. Yahan humne NestJS ko bataya ke is Interceptor ko globally apply kar do
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CurrentUserInterceptor,
-    },
-  ],
+  // Yahan se humne purana CurrentUserInterceptor hata diya hai
+  providers: [UsersService, AuthService],
 })
-export class UsersModule {}
+export class UsersModule {
+  // Yeh function humare naye middleware ko har route ('*') par apply karega
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CurrentUserMiddleware).forRoutes('*');
+  }
+}

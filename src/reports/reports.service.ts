@@ -1,4 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Report } from './report.entity';
+import { CreateReportDto } from './dtos/create-report.dto';
+import { User } from '../users/user.entity';
 
 @Injectable()
-export class ReportsService {}
+export class ReportsService {
+  constructor(@InjectRepository(Report) private repo: Repository<Report>) {}
+
+  create(reportDto: CreateReportDto, user: User) {
+    const report = this.repo.create(reportDto);
+    report.user = user;
+    return this.repo.save(report);
+  }
+
+  // Yahan se naya function shuru ho raha hai
+  async changeApproval(id: string, approved: boolean) {
+    // 1. Pehle database mein report dhoondo
+    const report = await this.repo.findOne({ where: { id: parseInt(id) } });
+
+    // 2. Agar na mile toh error do
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    // 3. Agar mil jaye toh uska status update kar ke save kar do
+    report.approved = approved;
+    return this.repo.save(report);
+  }
+}
