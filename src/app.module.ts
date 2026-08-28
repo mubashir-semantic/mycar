@@ -14,16 +14,27 @@ import { Report } from './reports/report.entity';
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    // Yahan humne forRootAsync use kiya hai
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
+        if (process.env.NODE_ENV === 'production') {
+          return {
+            type: 'postgres',
+            url: process.env.DATABASE_URL,
+            synchronize: false,
+            migrationsRun: true,
+            entities: [User, Report],
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          };
+        }
+
         return {
           type: 'better-sqlite3',
-          // Ab hum ConfigService ke zariye securely DB name get kar rahe hain
           database: config.get<string>('DB_NAME'),
           entities: [User, Report],
-          synchronize: true,
+          synchronize: false,
         };
       },
     }),
