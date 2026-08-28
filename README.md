@@ -39,74 +39,226 @@ MyCar is a comprehensive **NestJS-based REST API** for managing car valuations a
 - **Cross-env** - Cross-platform environment variable management
 - **Reflect Metadata** - Decorator support
 
-## Project setup
+
+## ✨ Key Features
+
+### User Management
+- **User Registration & Authentication** - Secure signup and signin with email validation
+- **Password Security** - Scrypt-based password hashing with salt
+- **User Profiles** - Store user information and manage user accounts
+- **Admin Control** - Admin flag for role-based access control
+
+### Car Reports & Valuation
+- **Create Reports** - Users can create car valuation reports with detailed specs
+- **Report Approval** - Admin users can approve/reject reports
+- **Price Estimation** - Intelligent price estimation algorithm based on:
+  - Car make and model
+  - Location (latitude/longitude)
+  - Year of manufacture
+  - Mileage
+  - Similar approved reports (3 closest matches)
+- **Report Management** - Update and retrieve car valuation reports
+
+### Security & Authorization
+- **Auth Guard** - Protected routes requiring authentication
+- **Admin Guard** - Routes restricted to admin users only
+- **Current User Decorator** - Access authenticated user in controllers
+- **Current User Interceptor** - Serialize user data (exclude passwords)
+- **Middleware** - Current user middleware for request processing
+
+### Data Validation
+- **DTOs (Data Transfer Objects)** - Validate incoming request data
+- **Class Validator** - Automatic validation with decorators
+- **Type Safety** - TypeScript strict mode for compile-time safety
+
+## 📁 Project Structure
+
+```
+src/
+├── app.module.ts                 # Root module
+├── app.controller.ts             # Root controller
+├── app.service.ts                # Root service
+├── main.ts                        # Application entry point
+├── data-source.ts                # TypeORM configuration
+├── guards/
+│   ├── admin.guard.ts            # Admin authorization guard
+│   └── auth.guard.ts             # Authentication guard
+├── interceptors/
+│   ├── serialize.interceptor.ts   # Data serialization interceptor
+│   └── current-user.interceptor.ts # Current user interceptor
+├── migrations/
+│   └── 1787896174922-initial-schema.ts # Database schema migration
+├── users/
+│   ├── user.entity.ts            # User database entity
+│   ├── users.service.ts          # User business logic
+│   ├── users.controller.ts       # User API endpoints
+│   ├── users.module.ts           # User module configuration
+│   ├── auth.service.ts           # Authentication logic (signup/signin)
+│   ├── current-user.decorator.ts # Get current user from request
+│   ├── current-user.interceptor.ts # Serialize current user
+│   ├── middlewares/
+│   │   └── current-user.middleware.ts # Extract user from session
+│   └── dtos/
+│       ├── create-user.dto.ts    # Validation for user creation
+│       └── update-user.dto.ts    # Validation for user updates
+├── reports/
+│   ├── report.entity.ts          # Report database entity
+│   ├── reports.service.ts        # Report business logic & estimation
+│   ├── reports.controller.ts     # Report API endpoints
+│   ├── reports.module.ts         # Report module configuration
+│   └── dtos/
+│       ├── create-report.dto.ts  # Validation for report creation
+│       ├── approve-report.dto.ts # Validation for report approval
+│       ├── get-estimate.dto.ts   # Validation for price estimation
+│       └── report.dto.ts         # Report response DTO
+└── app.controller.spec.ts        # Root controller tests
+
+test/
+├── app.e2e-spec.ts              # End-to-end tests
+├── auth.e2e-spec.ts             # Authentication e2e tests
+└── jest-e2e.json                # E2E test configuration
+
+Configuration Files:
+├── package.json                 # Dependencies & scripts
+├── tsconfig.json                # TypeScript configuration
+├── tsconfig.build.json          # Build-specific TS config
+├── nest-cli.json                # NestJS CLI configuration
+├── eslint.config.mjs            # ESLint rules
+└── data-source.ts               # TypeORM database configuration
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- SQLite 3 (for development) or PostgreSQL (for production)
+
+### Project Setup
 
 ```bash
+# Install dependencies
 $ npm install
 ```
 
-## Compile and run the project
+### Environment Configuration
+
+Create environment files in the project root:
+
+**`.env.development`**
+```
+DB_NAME=db.sqlite
+NODE_ENV=development
+```
+
+**`.env.test`**
+```
+DB_NAME=test.sqlite
+NODE_ENV=test
+```
+
+**`.env.production`**
+```
+DATABASE_URL=postgresql://user:password@host:port/dbname
+NODE_ENV=production
+```
+
+### Database Setup
 
 ```bash
-# development
-$ npm run start
+# Generate and run migrations
+$ npm run migration:run
 
-# watch mode
+# Create a new migration (if needed)
+$ npm run migration:generate -- ./src/migrations/migration-name
+```
+
+## 📦 Running the Application
+
+```bash
+# Development mode (with auto-reload)
 $ npm run start:dev
 
-# production mode
+# Production mode
 $ npm run start:prod
+
+# Debug mode
+$ npm run start:debug
 ```
 
-## Run tests
+The application will start on `http://localhost:3000` by default.
+
+## 🧪 Testing
 
 ```bash
-# unit tests
+# Run unit tests
 $ npm run test
 
-# e2e tests
-$ npm run test:e2e
+# Run tests in watch mode
+$ npm run test:watch
 
-# test coverage
+# Run tests with coverage report
 $ npm run test:cov
+
+# Run end-to-end (e2e) tests
+$ npm run test:e2e
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🔧 Code Quality
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Format code with Prettier
+$ npm run format
+
+# Lint and fix code with ESLint
+$ npm run lint
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📚 API Endpoints
 
-## Resources
+### Authentication
+- `POST /auth/signup` - Register new user
+- `POST /auth/signin` - Login user
 
-Check out a few resources that may come in handy when working with NestJS:
+### Users
+- `GET /users/:id` - Get user by ID
+- `PATCH /users/:id` - Update user
+- `DELETE /users/:id` - Delete user
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Reports
+- `POST /reports` - Create car valuation report
+- `GET /reports` - Get all reports
+- `GET /reports/:id` - Get report by ID
+- `PATCH /reports/:id/approve` - Approve report (admin only)
+- `POST /reports/estimate` - Get price estimate for a car
 
-## Support
+## 🗄️ Database Schema
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### User Entity
+- `id` - Primary key
+- `email` - Unique email address
+- `password` - Hashed password
+- `admin` - Admin flag (default: true)
+- `reports` - One-to-many relationship with reports
 
-## Stay in touch
+### Report Entity
+- `id` - Primary key
+- `approved` - Approval status (default: false)
+- `price` - Car price estimate
+- `make` - Car manufacturer
+- `model` - Car model
+- `year` - Year of manufacture
+- `lng` - Longitude of car location
+- `lat` - Latitude of car location
+- `mileage` - Car mileage
+- `user` - Many-to-one relationship with User
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📝 Development Notes
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Uses **Cookie-Session** for user session management
+- Passwords are hashed using **Node.js Crypto** with scrypt algorithm
+- Database is SQLite3 in development (better-sqlite3 for performance)
+- Production uses PostgreSQL with migrations
+- All entities use TypeORM decorators for database mapping
+- DTOs use class-validator for input validation
+- Interceptors for serialization (excluding passwords from responses)
