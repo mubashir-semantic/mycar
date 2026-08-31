@@ -14,16 +14,12 @@ import {
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
-// import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
-// import { CurrentUserInterceptor } from './current-user.interceptor';
 import { User } from './user.entity';
 import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('auth')
-// @UseInterceptors(SerializeInterceptor)
-// @UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private usersService: UsersService,
