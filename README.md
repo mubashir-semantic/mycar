@@ -1,264 +1,504 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
 # MyCar - Car Valuation API
 
-## 📋 Description
+A comprehensive NestJS-based REST API for car valuation reports and marketplace management. This application allows users to create car valuation reports, get price estimates, and manage a car marketplace with products and orders.
 
-MyCar is a comprehensive **NestJS-based REST API** for managing car valuations and reports. The application allows users to create, update, and retrieve car valuation reports with intelligent price estimation based on make, model, location, year, and mileage. It features user authentication, authorization with admin controls, and robust data validation.
+## Project Overview
 
-## 🛠️ Tech Stack
+MyCar is a full-stack car valuation platform built with:
+- **Backend**: NestJS (TypeScript)
+- **Database**: SQLite (development) / PostgreSQL (production)
+- **ORM**: TypeORM
+- **Authentication**: Cookie-based sessions
+- **Testing**: Jest (Unit & E2E tests)
 
-### Core Framework & Runtime
-- **Node.js** - JavaScript runtime
-- **TypeScript** - Type-safe development
-- **NestJS 11.0.1** - Progressive Node.js framework for building efficient server-side applications
+## Key Features
 
-### Database & ORM
-- **TypeORM 1.1.0** - Object-Relational Mapping
-- **SQLite 3** - Development database (Better SQLite3 for faster performance)
-- **PostgreSQL** - Production database
-- **Database Migrations** - TypeORM-based schema management
+### 🚗 Car Valuation Reports
+- Create detailed car valuation reports with vehicle specifications
+- Include car make, model, year, mileage, and location (coordinates)
+- Get automated price estimates based on vehicle properties and location proximity
+- Admin approval workflow for published reports
 
-### Authentication & Security
-- **Cookie Session** - Session management
-- **Crypto** - Password hashing with scrypt algorithm
-- **Class Validator** - DTO validation
-- **Class Transformer** - Entity serialization/deserialization
+### 👤 User Management
+- User registration and authentication
+- Role-based access control (Admin / Regular User)
+- Secure password handling with encryption
+- Session management with cookie-based authentication
 
-### Code Quality & Testing
-- **Jest** - Unit and integration testing
-- **Supertest** - HTTP assertion library
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **TypeScript Strict Mode** - Type safety
+### 🛍️ Marketplace Features
+- Product catalog management
+- Order management with status tracking
+- User-specific order history
 
-### Additional Libraries
-- **RxJS** - Reactive programming
-- **Cross-env** - Cross-platform environment variable management
-- **Reflect Metadata** - Decorator support
+### 🔒 Security
+- Authentication Guards for protected routes
+- Admin-only authorization for sensitive operations
+- Input validation using class-validator
+- Password exclusion from API responses
 
-
-## ✨ Key Features
-
-### User Management
-- **User Registration & Authentication** - Secure signup and signin with email validation
-- **Password Security** - Scrypt-based password hashing with salt
-- **User Profiles** - Store user information and manage user accounts
-- **Admin Control** - Admin flag for role-based access control
-
-### Car Reports & Valuation
-- **Create Reports** - Users can create car valuation reports with detailed specs
-- **Report Approval** - Admin users can approve/reject reports
-- **Price Estimation** - Intelligent price estimation algorithm based on:
-  - Car make and model
-  - Location (latitude/longitude)
-  - Year of manufacture
-  - Mileage
-  - Similar approved reports (3 closest matches)
-- **Report Management** - Update and retrieve car valuation reports
-
-### Security & Authorization
-- **Auth Guard** - Protected routes requiring authentication
-- **Admin Guard** - Routes restricted to admin users only
-- **Current User Decorator** - Access authenticated user in controllers
-- **Current User Interceptor** - Serialize user data (exclude passwords)
-- **Middleware** - Current user middleware for request processing
-
-### Data Validation
-- **DTOs (Data Transfer Objects)** - Validate incoming request data
-- **Class Validator** - Automatic validation with decorators
-- **Type Safety** - TypeScript strict mode for compile-time safety
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
-├── app.module.ts                 # Root module
-├── app.controller.ts             # Root controller
-├── app.service.ts                # Root service
-├── main.ts                        # Application entry point
-├── data-source.ts                # TypeORM configuration
-├── guards/
-│   ├── admin.guard.ts            # Admin authorization guard
-│   └── auth.guard.ts             # Authentication guard
-├── interceptors/
-│   ├── serialize.interceptor.ts   # Data serialization interceptor
-│   └── current-user.interceptor.ts # Current user interceptor
-├── migrations/
-│   └── 1787896174922-initial-schema.ts # Database schema migration
-├── users/
-│   ├── user.entity.ts            # User database entity
-│   ├── users.service.ts          # User business logic
-│   ├── users.controller.ts       # User API endpoints
-│   ├── users.module.ts           # User module configuration
-│   ├── auth.service.ts           # Authentication logic (signup/signin)
-│   ├── current-user.decorator.ts # Get current user from request
-│   ├── current-user.interceptor.ts # Serialize current user
+├── users/               # User management & authentication
+│   ├── auth.service.ts
+│   ├── users.service.ts
+│   ├── users.controller.ts
+│   ├── user.entity.ts
+│   ├── dtos/
+│   │   ├── create-user.dto.ts
+│   │   └── update-user.dto.ts
 │   ├── middlewares/
-│   │   └── current-user.middleware.ts # Extract user from session
+│   └── decorators/
+├── reports/             # Car valuation reports
+│   ├── reports.service.ts
+│   ├── reports.controller.ts
+│   ├── report.entity.ts
 │   └── dtos/
-│       ├── create-user.dto.ts    # Validation for user creation
-│       └── update-user.dto.ts    # Validation for user updates
-├── reports/
-│   ├── report.entity.ts          # Report database entity
-│   ├── reports.service.ts        # Report business logic & estimation
-│   ├── reports.controller.ts     # Report API endpoints
-│   ├── reports.module.ts         # Report module configuration
+│       ├── create-report.dto.ts
+│       ├── approve-report.dto.ts
+│       ├── get-estimate.dto.ts
+│       └── report.dto.ts
+├── products/            # Product management
+│   ├── products.service.ts
+│   ├── products.controller.ts
+│   ├── entities/
+│   │   └── product.entity.ts
 │   └── dtos/
-│       ├── create-report.dto.ts  # Validation for report creation
-│       ├── approve-report.dto.ts # Validation for report approval
-│       ├── get-estimate.dto.ts   # Validation for price estimation
-│       └── report.dto.ts         # Report response DTO
-└── app.controller.spec.ts        # Root controller tests
+├── orders/              # Order management
+│   ├── orders.service.ts
+│   ├── orders.controller.ts
+│   ├── entities/
+│   │   └── order.entity.ts
+│   └── dtos/
+├── guards/              # Authorization guards
+│   ├── auth.guard.ts
+│   └── admin.guard.ts
+├── interceptors/        # Response serialization
+│   └── serialize.interceptor.ts
+├── migrations/          # Database migrations
+├── app.module.ts        # Root application module
+├── app.service.ts
+├── app.controller.ts
+└── main.ts              # Application entry point
 
-test/
-├── app.e2e-spec.ts              # End-to-end tests
-├── auth.e2e-spec.ts             # Authentication e2e tests
-└── jest-e2e.json                # E2E test configuration
-
-Configuration Files:
-├── package.json                 # Dependencies & scripts
-├── tsconfig.json                # TypeScript configuration
-├── tsconfig.build.json          # Build-specific TS config
-├── nest-cli.json                # NestJS CLI configuration
-├── eslint.config.mjs            # ESLint rules
-└── data-source.ts               # TypeORM database configuration
+test/                   # E2E and unit tests
+├── jest-e2e.json
+├── app.e2e-spec.ts
+└── auth.e2e-spec.ts
 ```
 
-## 🚀 Getting Started
+## Core Entities
+
+### User
+- **ID**: Auto-generated primary key
+- **Email**: User's email address
+- **Password**: Encrypted password (excluded from responses)
+- **Admin**: Boolean flag for admin privileges
+- **Reports**: One-to-many relationship with car reports
+
+### Report (Car Valuation)
+- **ID**: Auto-generated primary key
+- **Make**: Vehicle manufacturer
+- **Model**: Vehicle model name
+- **Year**: Manufacturing year
+- **Mileage**: Current vehicle mileage
+- **Price**: Estimated or provided price
+- **Latitude/Longitude**: Location coordinates
+- **Approved**: Admin approval status
+- **User**: Many-to-one relationship with User
+
+### Product
+- **ID**: Auto-generated primary key
+- **Name**: Product name
+- **Description**: Product details
+- **Price**: Product price (decimal)
+
+### Order
+- **ID**: Auto-generated primary key
+- **Status**: Order status (default: 'pending')
+- **CreatedAt**: Order creation timestamp
+- **User**: Many-to-one relationship with User
+
+## Installation & Setup
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
-- SQLite 3 (for development) or PostgreSQL (for production)
+- PostgreSQL (for production) or SQLite (included for development)
 
-### Project Setup
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd mycar
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**
+   
+   Create `.env.development` for development:
+   ```env
+   NODE_ENV=development
+   DB_NAME=mycar.db
+   PORT=3000
+   COOKIE_KEY=your-secret-cookie-key
+   ```
+
+   Create `.env.production` for production:
+   ```env
+   NODE_ENV=production
+   DATABASE_URL=postgresql://user:password@host:port/dbname
+   PORT=3000
+   COOKIE_KEY=your-secret-cookie-key
+   ```
+
+4. **Database Setup**
+   ```bash
+   # Run migrations
+   npm run migration:run
+   
+   # Generate new migrations
+   npm run migration:generate -- ./src/migrations/migration-name
+   ```
+
+5. **Start the application**
+   ```bash
+   # Development mode with auto-reload
+   npm run start:dev
+   
+   # Debug mode
+   npm run start:debug
+   
+   # Production mode
+   npm run build
+   npm run start:prod
+   ```
+
+## API Endpoints
+
+### Authentication (Users)
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|----------------|
+| POST | `/auth/signup` | Create new user account | No |
+| POST | `/auth/signin` | Login user | No |
+| POST | `/auth/signout` | Logout user | Yes |
+| GET | `/auth/whoami` | Get current user info | Yes |
+| GET | `/auth/:id` | Get user by ID | Yes |
+| PATCH | `/auth/:id` | Update user details | Yes |
+| DELETE | `/auth/:id` | Delete user account | Yes |
+
+### Reports (Car Valuations)
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---|---|
+| POST | `/reports` | Create valuation report | Yes | No |
+| GET | `/reports` | Get price estimates | No | No |
+| PATCH | `/reports/:id` | Approve/reject report | Yes | Yes |
+
+**Create Report Payload:**
+```json
+{
+  "make": "Toyota",
+  "model": "Camry",
+  "year": 2022,
+  "mileage": 15000,
+  "price": 25000,
+  "lng": -73.935242,
+  "lat": 40.730610
+}
+```
+
+**Get Estimate Query:**
+```
+GET /reports?make=Toyota&model=Camry&year=2022&mileage=15000&lng=-73.935242&lat=40.730610
+```
+
+### Products
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---|
+| POST | `/products` | Create product | Yes |
+| GET | `/products` | List all products | No |
+| GET | `/products/:id` | Get product details | No |
+| PATCH | `/products/:id` | Update product | Yes |
+| DELETE | `/products/:id` | Delete product | Yes |
+
+### Orders
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---|
+| POST | `/orders` | Create order | Yes |
+| GET | `/orders` | Get user's orders | Yes |
+| GET | `/orders/:id` | Get order details | Yes |
+| PATCH | `/orders/:id` | Update order status | Yes |
+| DELETE | `/orders/:id` | Cancel order | Yes |
+
+## Available Scripts
 
 ```bash
-# Install dependencies
-$ npm install
+# Development
+npm run start              # Start development server
+npm run start:dev         # Start with auto-reload
+npm run start:debug       # Start in debug mode
+npm run start:prod        # Start production build
+
+# Building
+npm run build             # Compile TypeScript to JavaScript
+
+# Testing
+npm test                  # Run unit tests
+npm run test:watch       # Run tests in watch mode
+npm run test:cov         # Run tests with coverage
+npm run test:debug       # Debug tests
+npm run test:e2e         # Run end-to-end tests
+
+# Code Quality
+npm run lint             # Run ESLint and fix issues
+npm run format           # Format code with Prettier
+
+# Database
+npm run typeorm          # Run TypeORM CLI commands
+npm run migration:generate  # Generate new migration
+npm run migration:run    # Run pending migrations
 ```
 
-### Environment Configuration
+## Technology Stack
 
-Create environment files in the project root:
+### Core Framework
+- **@nestjs/core**: NestJS core framework
+- **@nestjs/common**: Common utilities and decorators
+- **@nestjs/platform-express**: Express adapter
 
-**`.env.development`**
+### Database & ORM
+- **typeorm**: Object-Relational Mapping
+- **@nestjs/typeorm**: NestJS TypeORM integration
+- **sqlite3** / **better-sqlite3**: SQLite driver
+- **pg**: PostgreSQL driver
+
+### Validation & Serialization
+- **class-validator**: DTO validation
+- **class-transformer**: Data transformation and serialization
+
+### Authentication & Security
+- **cookie-session**: Cookie-based session management
+
+### Development & Testing
+- **@nestjs/cli**: NestJS CLI
+- **jest**: Testing framework
+- **@nestjs/testing**: NestJS testing utilities
+- **ts-node**: TypeScript execution for Node.js
+- **typescript**: TypeScript compiler
+- **eslint**: Code linting
+- **prettier**: Code formatting
+
+## Authentication & Authorization
+
+### Session Management
+The application uses cookie-based sessions for authentication:
+- Users can sign up or sign in
+- Session ID is stored in HTTP-only cookies
+- Middleware automatically deserializes the current user
+
+### Guards
+
+**AuthGuard**: Protects routes requiring authentication
+- Checks if `session.userId` exists
+- Returns 403 if user is not authenticated
+
+**AdminGuard**: Restricts routes to admin users only
+- Extends AuthGuard
+- Verifies user's admin role
+
+## Error Handling
+
+The application includes comprehensive error handling:
+- `NotFoundException`: Resource not found
+- `BadRequestException`: Invalid request data
+- `UnauthorizedException`: Authentication failed
+- `ForbiddenException`: Authorization failed
+- Global validation pipe for DTO validation
+
+## Testing
+
+### Unit Tests
+Run individual test suites:
+```bash
+npm test src/users/users.service.spec.ts
+npm test src/reports/reports.service.spec.ts
 ```
-DB_NAME=db.sqlite
+
+### E2E Tests
+Comprehensive integration tests:
+```bash
+npm run test:e2e
+```
+
+Test files:
+- `test/app.e2e-spec.ts` - Application integration tests
+- `test/auth.e2e-spec.ts` - Authentication flow tests
+
+## Database Migrations
+
+The project uses TypeORM migrations for schema management:
+
+```bash
+# Generate a new migration after entity changes
+npm run migration:generate
+
+# Run all pending migrations
+npm run migration:run
+
+# Revert last migration
+npm run typeorm migration:revert
+```
+
+Migrations are stored in `src/migrations/`.
+
+## Environment Variables
+
+### Development (.env.development)
+```env
 NODE_ENV=development
+DB_NAME=mycar.db
+PORT=3000
+COOKIE_KEY=dev-cookie-secret
 ```
 
-**`.env.test`**
-```
-DB_NAME=test.sqlite
-NODE_ENV=test
-```
-
-**`.env.production`**
-```
-DATABASE_URL=postgresql://user:password@host:port/dbname
+### Production (.env.production)
+```env
 NODE_ENV=production
+DATABASE_URL=postgresql://user:password@localhost:5432/mycar
+PORT=3000
+COOKIE_KEY=prod-cookie-secret
 ```
 
-### Database Setup
+## Best Practices Implemented
 
+✅ **Clean Architecture**: Separation of concerns with modules, controllers, services  
+✅ **Type Safety**: Full TypeScript support with strict types  
+✅ **Validation**: DTO-based request validation  
+✅ **Security**: Guards for authentication and authorization  
+✅ **Testing**: Comprehensive unit and E2E tests  
+✅ **Code Quality**: ESLint and Prettier configuration  
+✅ **Database**: Migrations and ORM best practices  
+✅ **Error Handling**: Consistent exception handling  
+✅ **Documentation**: Detailed code comments and this README
+
+## Development Workflow
+
+1. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make Changes**
+   - Create or modify entities in `src/[module]/entities/`
+   - Define DTOs in `src/[module]/dtos/`
+   - Implement business logic in services
+   - Expose APIs through controllers
+
+3. **Generate Migration** (if entities changed)
+   ```bash
+   npm run migration:generate
+   ```
+
+4. **Test Your Changes**
+   ```bash
+   npm run lint
+   npm test
+   npm run test:e2e
+   ```
+
+5. **Format Code**
+   ```bash
+   npm run format
+   ```
+
+6. **Commit & Push**
+   ```bash
+   git add .
+   git commit -m "feat: description of changes"
+   git push origin feature/your-feature-name
+   ```
+
+## Deployment
+
+### Prerequisites
+- Node.js runtime environment
+- PostgreSQL database instance
+- Environment variables configured
+
+### Production Build
 ```bash
-# Generate and run migrations
-$ npm run migration:run
-
-# Create a new migration (if needed)
-$ npm run migration:generate -- ./src/migrations/migration-name
+npm install --production
+npm run build
+npm run migration:run
+npm run start:prod
 ```
 
-## 📦 Running the Application
+### Docker Deployment (Example Dockerfile)
+```dockerfile
+FROM node:18-alpine
 
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY dist ./dist
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:prod"]
+```
+
+## Troubleshooting
+
+### Database Connection Issues
+- Verify database URL in environment variables
+- Ensure database server is running
+- Check database credentials and permissions
+
+### TypeScript Compilation Errors
 ```bash
-# Development mode (with auto-reload)
-$ npm run start:dev
-
-# Production mode
-$ npm run start:prod
-
-# Debug mode
-$ npm run start:debug
+npm run build -- --skipLibCheck
 ```
 
-The application will start on `http://localhost:3000` by default.
-
-## 🧪 Testing
-
+### Test Failures
 ```bash
-# Run unit tests
-$ npm run test
-
-# Run tests in watch mode
-$ npm run test:watch
-
-# Run tests with coverage report
-$ npm run test:cov
-
-# Run end-to-end (e2e) tests
-$ npm run test:e2e
+npm run test -- --detectOpenHandles
+npm run test:debug  # Debug mode
 ```
 
-## 🔧 Code Quality
-
+### Port Already in Use
 ```bash
-# Format code with Prettier
-$ npm run format
-
-# Lint and fix code with ESLint
-$ npm run lint
+PORT=3001 npm run start:dev
 ```
 
-## 📚 API Endpoints
+## Contributing
 
-### Authentication
-- `POST /auth/signup` - Register new user
-- `POST /auth/signin` - Login user
+1. Follow the existing code structure and style
+2. Write tests for new features
+3. Update documentation
+4. Run `npm run lint` and `npm run format` before committing
+5. Ensure all tests pass
 
-### Users
-- `GET /users/:id` - Get user by ID
-- `PATCH /users/:id` - Update user
-- `DELETE /users/:id` - Delete user
+## License
 
-### Reports
-- `POST /reports` - Create car valuation report
-- `GET /reports` - Get all reports
-- `GET /reports/:id` - Get report by ID
-- `PATCH /reports/:id/approve` - Approve report (admin only)
-- `POST /reports/estimate` - Get price estimate for a car
+This project is licensed under the UNLICENSED license.
 
-## 🗄️ Database Schema
+## Support & Questions
 
-### User Entity
-- `id` - Primary key
-- `email` - Unique email address
-- `password` - Hashed password
-- `admin` - Admin flag (default: true)
-- `reports` - One-to-many relationship with reports
+For issues, questions, or feature requests, please open an issue in the repository or contact the development team.
 
-### Report Entity
-- `id` - Primary key
-- `approved` - Approval status (default: false)
-- `price` - Car price estimate
-- `make` - Car manufacturer
-- `model` - Car model
-- `year` - Year of manufacture
-- `lng` - Longitude of car location
-- `lat` - Latitude of car location
-- `mileage` - Car mileage
-- `user` - Many-to-one relationship with User
+---
 
-## 📝 Development Notes
-
-- Uses **Cookie-Session** for user session management
-- Passwords are hashed using **Node.js Crypto** with scrypt algorithm
-- Database is SQLite3 in development (better-sqlite3 for performance)
-- Production uses PostgreSQL with migrations
-- All entities use TypeORM decorators for database mapping
-- DTOs use class-validator for input validation
-- Interceptors for serialization (excluding passwords from responses)
+**Last Updated**: 2026-09-01  
+**Version**: 0.0.1
