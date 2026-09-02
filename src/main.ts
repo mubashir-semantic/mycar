@@ -22,16 +22,14 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger API Documentation Setup
   const config = new DocumentBuilder()
-    .setTitle('MyCar API')
-    .setDescription('The MyCar application API documentation')
+    .setTitle('API')
+    .setDescription('API description')
     .setVersion('1.0')
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document); // 'api' path pe show hoga
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(3000, '0.0.0.0');
 }
 bootstrap().catch(console.error);
